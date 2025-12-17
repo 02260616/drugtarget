@@ -29,16 +29,16 @@
           <tr>
             <th>靶点</th>
             <th>置信度</th>
-            <th>DrugBank</th>
-            <th>药敏（GDSC）</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(item, index) in result.targets" :key="'t' + index">
             <td>{{ item.Target }}</td>
-            <td>{{ item.Confidence }}</td>
-            <td>{{ item.DrugBank ? "✔" : "✘" }}</td>
-            <td>{{ item.GDSC ? "✔" : "✘" }}</td>
+            <td>
+              <span :class="confidenceClass(item.Confidence)">
+                {{ item.Confidence }}
+              </span>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -50,16 +50,16 @@
           <tr>
             <th>基因</th>
             <th>置信度</th>
-            <th>DrugBank</th>
-            <th>药敏（GDSC）</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(item, index) in result.genes" :key="'g' + index">
             <td>{{ item.Gene }}</td>
-            <td>{{ item.Confidence }}</td>
-            <td>{{ item.DrugBank ? "✔" : "✘" }}</td>
-            <td>{{ item.GDSC ? "✔" : "✘" }}</td>
+            <td>
+              <span :class="confidenceClass(item.Confidence)">
+                {{ item.Confidence }}
+              </span>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -71,16 +71,16 @@
           <tr>
             <th>通路</th>
             <th>置信度</th>
-            <th>DrugBank</th>
-            <th>药敏（GDSC）</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(item, index) in result.pathways" :key="'p' + index">
             <td>{{ item.Pathway }}</td>
-            <td>{{ item.Confidence }}</td>
-            <td>{{ item.DrugBank ? "✔" : "✘" }}</td>
-            <td>{{ item.GDSC ? "✔" : "✘" }}</td>
+            <td>
+              <span :class="confidenceClass(item.Confidence)">
+                {{ item.Confidence }}
+              </span>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -112,9 +112,26 @@ const query = async () => {
 
   loading.value = false;
 };
+
+// ⭐ 根据置信度返回不同 class
+const confidenceClass = (conf) => {
+  if (!conf) return "conf-unknown";
+
+  switch (conf.toLowerCase()) {
+    case "high":
+      return "conf-high";
+    case "medium":
+      return "conf-medium";
+    case "low":
+      return "conf-low";
+    default:
+      return "conf-unknown";
+  }
+};
 </script>
 
 <style scoped>
+/* ================= 布局 ================= */
 .container {
   max-width: 900px;
   margin: 40px auto;
@@ -165,14 +182,11 @@ const query = async () => {
   color: #666;
 }
 
-.result {
-  margin-top: 30px;
-}
-
 .section-title {
   margin: 30px 0 10px;
 }
 
+/* ================= 表格 ================= */
 .table {
   width: 100%;
   border-collapse: collapse;
@@ -183,5 +197,25 @@ const query = async () => {
 .table td {
   padding: 10px;
   border-top: 1px solid #eaeaea;
+}
+
+/* ================= 置信度颜色 ================= */
+.conf-high {
+  color: #2ecc71;
+  font-weight: 600;
+}
+
+.conf-medium {
+  color: #f39c12;
+  font-weight: 600;
+}
+
+.conf-low {
+  color: #e74c3c;
+  font-weight: 600;
+}
+
+.conf-unknown {
+  color: #7f8c8d;
 }
 </style>
